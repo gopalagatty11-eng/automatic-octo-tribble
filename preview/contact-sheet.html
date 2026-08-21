@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURUM NOTE v2 — Phone Shell Contact Sheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #C9A96E;
+    --gold-light: #E8D5A8;
+    --gold-dark: #8B7340;
+    --gold-dim: rgba(201,169,110,0.15);
+    --gold-border: rgba(201,169,110,0.3);
+    --black: #0A0A0A;
+    --dark-glass: #1A1A1A;
+    --dark-glass-light: #222222;
+    --dark-glass-elevated: #2A2A2A;
+    --text-primary: #FFFFFF;
+    --text-secondary: #9A9A9A;
+    --text-tertiary: #666666;
+  }
+
+  body {
+    background: #050505;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  /* ── Page Header ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .page-header h1 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .page-header p {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── Screen Label ── */
+  .screen-label {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .screen-label .num {
+    color: var(--gold);
+    margin-right: 6px;
+  }
+
+  /* ── Phone Grid ── */
+  .phone-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ── Phone Shell ── */
+  .phone-shell {
+    position: relative;
+    width: 280px;
+    height: 580px;
+    /* Outer gold metallic rim */
+    border-radius: 44px;
+    padding: 6px;
+    background: linear-gradient(145deg, #D4B87A 0%, #A88B4A 25%, #C9A96E 50%, #8B7340 75%, #C9A96E 100%);
+    box-shadow:
+      0 0 0 1px rgba(201,169,110,0.4),
+      0 20px 60px rgba(0,0,0,0.6),
+      0 4px 20px rgba(201,169,110,0.1),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+
+  /* Inner dark glass body */
+  .phone-body {
+    width: 100%;
+    height: 100%;
+    border-radius: 38px;
+    background: var(--black);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Screen content area */
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    position: relative;
+    background: var(--black);
+  }
+  .phone-screen::-webkit-scrollbar { display: none; }
+
+  /* ── Sensor Island (Dynamic Island) ── */
+  .sensor-island {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 24px;
+    background: #000000;
+    border-radius: 14px;
+    z-index: 10;
+  }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    height: 50px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 24px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .status-bar .time { font-size: 14px; font-weight: 600; }
+  .status-bar .icons { font-size: 10px; letter-spacing: 2px; }
+
+  /* ── Home Indicator ── */
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    z-index: 10;
+  }
+
+  /* ═══════════════════════════════════════
+     SCREEN: HOME
+     ═══════════════════════════════════════ */
+  .home-screen { padding-bottom: 30px; }
+
+  .home-title {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  .home-title .greeting {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+  }
+  .home-title .app-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 4px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 6px;
+    padding: 0 20px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    flex: 1;
+    background: rgba(26,26,26,0.6);
+    border: 1px solid rgba(201,169,110,0.15);
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 2px;
+  }
+  .stat-label {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin: 0 0 10px;
+  }
+  .section-title {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .see-all {
+    font-size: 12px;
+    color: var(--gold);
+  }
+
+  .quick-actions {
+    display: flex;
+    gap: 6px;
+    padding: 0 20px;
+    margin-bottom: 24px;
+  }
+  .quick-action {
+    flex: 1;
+    background: var(--dark-glass);
+    border: 1px solid var(--gold-border);
+    border-radius: 10px;
+    padding: 16px 6px 12px;
+    text-align: center;
+  }
+  .quick-action .icon { font-size: 20px; margin-bottom: 6px; }
+  .quick-action .label {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  /* ── Note Card ── */
+  .note-card {
+    margin: 0 20px 10px;
+    background: var(--dark-glass);
+    border: 1px solid var(--gold-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .note-card .accent-line {
+    height: 2px;
+    background: var(--gold);
+    opacity: 0.6;
+  }
+  .note-card .card-body { padding: 12px 14px; }
+  .note-card .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .note-card .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .note-card .card-indicator {
+    font-size: 10px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-left: 6px;
+  }
+  .note-card .card-excerpt {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 16px;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .note-card .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .note-card .card-date {
+    font-size: 10px;
+    color: var(--text-tertiary);
+  }
+  .note-card .card-tags {
+    display: flex;
+    gap: 4px;
+  }
+  .tag-pill {
+    background: var(--gold-dim);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 8px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+  }
+
+  .home-divider {
+    height: 1px;
+    background: var(--gold-border);
+    margin: 20px 20px 12px;
+  }
+  .home-version {
+    text-align: center;
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding-bottom: 10px;
+  }
+
+  /* ═══════════════════════════════════════
+     SCREEN: NOTES LIST
+     ═══════════════════════════════════════ */
+  .notes-header {
+    padding: 0 20px;
+    margin-bottom: 12px;
+  }
+  .notes-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .notes-header .count {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+  }
+
+  .search-bar {
+    margin: 0 20px 12px;
+    background: var(--dark-glass);
+    border: 1px solid var(--gold-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .search-bar .search-icon { color: var(--text-tertiary); font-size: 14px; }
+  .search-bar span { font-size: 13px; color: var(--text-tertiary); }
+
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    padding: 0 20px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    padding: 4px 10px;
+    border-radius: 10px;
+    background: var(--dark-glass);
+    border: 1px solid var(--gold-border);
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .filter-chip.active {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ═══════════════════════════════════════
+     SCREEN: NEW NOTE
+     ═══════════════════════════════════════ */
+  .screen-nav {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 16px;
+  }
+  .back-btn {
+    font-size: 22px;
+    color: var(--gold);
+    margin-right: 10px;
+    font-weight: 300;
+  }
+  .screen-title {
+    font-size: 18px;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+  }
+  .screen-spacer { width: 60px; }
+
+  .title-input {
+    margin: 0 20px 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gold-border);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .tag-selector {
+    display: flex;
+    gap: 6px;
+    padding: 0 20px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .tag-option {
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--dark-glass);
+    border: 1px solid var(--gold-border);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .tag-option.active {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .editor-area {
+    margin: 0 20px 16px;
+    background: rgba(26,26,26,0.6);
+    border: 1px solid rgba(201,169,110,0.15);
+    border-radius: 12px;
+    padding: 14px;
+    min-height: 200px;
+  }
+  .editor-area .placeholder {
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+  .editor-area .sample-text {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 20px;
+  }
+
+  .attach-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  .attach-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--dark-glass);
+    border: 1px solid var(--gold-border);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .attach-btn .ai { color: var(--gold); font-size: 14px; }
+
+  .save-btn {
+    margin: 0 20px;
+    padding: 14px;
+    background: var(--gold);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--black);
+  }
+
+  /* ═══════════════════════════════════════
+     SCREEN: PHOTO NOTE
+     ═══════════════════════════════════════ */
+  .photo-area {
+    margin: 0 20px 16px;
+    height: 220px;
+    border: 2px dashed var(--gold-border);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26,26,26,0.4);
+  }
+  .photo-area .capture-ring {
+    width: 70px;
+    height: 70px;
+    border: 2.5px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .photo-area .capture-ring .inner {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(201,169,110,0.1);
+  }
+  .photo-area .capture-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .field-label {
+    padding: 0 20px;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 8px;
+  }
+
+  .caption-area {
+    margin: 0 20px 16px;
+    background: rgba(26,26,26,0.6);
+    border: 1px solid rgba(201,169,110,0.15);
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 50px;
+  }
+  .caption-area .text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 18px;
+  }
+
+  .quick-tags {
+    display: flex;
+    gap: 6px;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* ═══════════════════════════════════════
+     SCREEN: CALCULATOR
+     ═══════════════════════════════════════ */
+  .calc-display {
+    margin: 0 20px 16px;
+    background: var(--dark-glass);
+    border: 1px solid var(--gold-border);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: right;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .calc-display .op-line {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+  }
+  .calc-display .result {
+    font-size: 40px;
+    font-weight: 300;
+    color: var(--gold);
+    letter-spacing: -1px;
+  }
+
+  .calc-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 20px;
+  }
+  .calc-row {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+  }
+  .calc-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dark-glass);
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 10px;
+    font-size: 18px;
+    color: var(--text-primary);
+    height: 48px;
+    font-weight: 400;
+  }
+  .calc-btn.op {
+    background: var(--gold);
+    color: var(--black);
+    font-weight: 600;
+  }
+  .calc-btn.fn {
+    background: var(--dark-glass-elevated);
+    color: var(--gold);
+  }
+  .calc-btn.wide {
+    flex: 2.08;
+  }
+
+  .save-result-btn {
+    margin: 16px 20px 20px;
+    padding: 12px;
+    border: 1px solid var(--gold-border);
+    background: var(--gold-dim);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* ── Interactive Tabs ── */
+  .tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 40px auto 0;
+    max-width: 600px;
+  }
+  .tab-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--gold-border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-tertiary);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { border-color: var(--gold); color: var(--text-secondary); }
+  .tab-btn.active {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .phone-container { display: none; }
+  .phone-container.active { display: flex; justify-content: center; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(201,169,110,0.15);
+  }
+  .footer p {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+</style>
+</head>
+<body>
+
+<!-- Page Header -->
+<div class="page-header">
+  <h1>AURUM NOTE</h1>
+  <p>v2 Premium Mockup — Phone Shell Contact Sheet</p>
+</div>
+
+<!-- Interactive Screen Tabs -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showScreen('home')">Home</button>
+  <button class="tab-btn" onclick="showScreen('notes')">Notes</button>
+  <button class="tab-btn" onclick="showScreen('new-note')">New Note</button>
+  <button class="tab-btn" onclick="showScreen('photo-note')">Photo Note</button>
+  <button class="tab-btn" onclick="showScreen('calculator')">Calculator</button>
+  <button class="tab-btn" onclick="showScreen('all')">All Screens</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     INDIVIDUAL SCREENS (shown via tabs)
+     ════════════════════════════════════════ -->
+
+<!-- HOME SCREEN -->
+<div class="phone-container active" id="screen-home">
+  <div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="sensor-island"></div>
+        <div class="phone-screen home-screen">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="icons">●●● ▮</span>
+          </div>
+
+          <div class="home-title">
+            <div class="greeting">Good morning</div>
+            <div class="app-name">AURUM</div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value">7</div>
+              <div class="stat-label">Notes</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">1</div>
+              <div class="stat-label">Photos</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">2</div>
+              <div class="stat-label">Calcs</div>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <span class="section-title">Quick Actions</span>
+          </div>
+          <div class="quick-actions">
+            <div class="quick-action">
+              <div class="icon">✎</div>
+              <div class="label">New Note</div>
+            </div>
+            <div class="quick-action">
+              <div class="icon">◉</div>
+              <div class="label">Photo Note</div>
+            </div>
+            <div class="quick-action">
+              <div class="icon">fx</div>
+              <div class="label">Calculator</div>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <span class="section-title">Recent Notes</span>
+            <span class="see-all">See All</span>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Q3 Strategy Review</span>
+                <span class="card-indicator">fx</span>
+              </div>
+              <div class="card-excerpt">Key metrics from the quarterly review — revenue up 12%, churn down to 2.1%, NPS holding at 72.</div>
+              <div class="card-footer">
+                <span class="card-date">Today, 9:41 AM</span>
+                <div class="card-tags"><span class="tag-pill">Strategy</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Client Onboarding Notes</span>
+                <span class="card-indicator">◉</span>
+              </div>
+              <div class="card-excerpt">Meridian Corp kickoff — they want the premium tier, 50-seat license, SSO integration timeline.</div>
+              <div class="card-footer">
+                <span class="card-date">Yesterday</span>
+                <div class="card-tags">
+                  <span class="tag-pill">Clients</span>
+                  <span class="tag-pill">Sales</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Product Roadmap v4</span>
+              </div>
+              <div class="card-excerpt">Phase 2 priorities: dark mode, offline sync, collaboration features. Deprioritize widget system.</div>
+              <div class="card-footer">
+                <span class="card-date">Aug 19</span>
+                <div class="card-tags"><span class="tag-pill">Product</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="home-divider"></div>
+          <div class="home-version">AURUM NOTE v2.0 — Premium Edition</div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="num">01</span>Home Dashboard</div>
+  </div>
+</div>
+
+<!-- NOTES LIST SCREEN -->
+<div class="phone-container" id="screen-notes">
+  <div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="sensor-island"></div>
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="icons">●●● ▮</span>
+          </div>
+
+          <div class="notes-header">
+            <h2>All Notes</h2>
+            <div class="count">7 notes</div>
+          </div>
+
+          <div class="search-bar">
+            <span class="search-icon">⌕</span>
+            <span>Search notes...</span>
+          </div>
+
+          <div class="filter-row">
+            <span class="filter-chip active">All</span>
+            <span class="filter-chip">Strategy</span>
+            <span class="filter-chip">Clients</span>
+            <span class="filter-chip">Product</span>
+            <span class="filter-chip">Finance</span>
+            <span class="filter-chip">Design</span>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Q3 Strategy Review</span>
+                <span class="card-indicator">fx</span>
+              </div>
+              <div class="card-excerpt">Key metrics from the quarterly review — revenue up 12%, churn down to 2.1%, NPS holding at 72.</div>
+              <div class="card-footer">
+                <span class="card-date">Today, 9:41 AM</span>
+                <div class="card-tags"><span class="tag-pill">Strategy</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Client Onboarding Notes</span>
+                <span class="card-indicator">◉</span>
+              </div>
+              <div class="card-excerpt">Meridian Corp kickoff — they want the premium tier, 50-seat license, SSO integration timeline.</div>
+              <div class="card-footer">
+                <span class="card-date">Yesterday</span>
+                <div class="card-tags">
+                  <span class="tag-pill">Clients</span>
+                  <span class="tag-pill">Sales</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Product Roadmap v4</span>
+              </div>
+              <div class="card-excerpt">Phase 2 priorities: dark mode, offline sync, collaboration features. Deprioritize widget system.</div>
+              <div class="card-footer">
+                <span class="card-date">Aug 19</span>
+                <div class="card-tags"><span class="tag-pill">Product</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Investor Deck Notes</span>
+                <span class="card-indicator">fx</span>
+              </div>
+              <div class="card-excerpt">Series B prep — key talking points: TAM expansion, unit economics improvement, team scaling plan.</div>
+              <div class="card-footer">
+                <span class="card-date">Aug 18</span>
+                <div class="card-tags"><span class="tag-pill">Finance</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Design System Audit</span>
+              </div>
+              <div class="card-excerpt">Current component library has 47 components, 12 are unused. Suggest consolidation and token migration.</div>
+              <div class="card-footer">
+                <span class="card-date">Aug 16</span>
+                <div class="card-tags"><span class="tag-pill">Design</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Weekly Standup Summary</span>
+              </div>
+              <div class="card-excerpt">Backend migration on track. Frontend blocked on API changes. Mobile team starting beta testing.</div>
+              <div class="card-footer">
+                <span class="card-date">Aug 15</span>
+                <div class="card-tags"><span class="tag-pill">Engineering</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-card">
+            <div class="accent-line"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">Competitive Analysis</span>
+              </div>
+              <div class="card-excerpt">Notion, Obsidian, and Craft as primary competitors. Our advantage: offline-first, speed, and the premium aesthetic.</div>
+              <div class="card-footer">
+                <span class="card-date">Aug 14</span>
+                <div class="card-tags"><span class="tag-pill">Strategy</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="num">02</span>Notes List</div>
+  </div>
+</div>
+
+<!-- NEW NOTE SCREEN -->
+<div class="phone-container" id="screen-new-note">
+  <div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="sensor-island"></div>
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="icons">●●● ▮</span>
+          </div>
+
+          <div class="screen-nav">
+            <span class="back-btn">‹</span>
+            <span class="screen-title">New Note</span>
+            <span class="screen-spacer"></span>
+          </div>
+
+          <div class="title-input">Quarterly Revenue Forecast</div>
+
+          <div class="tag-selector">
+            <span class="tag-option active">Strategy</span>
+            <span class="tag-option">Clients</span>
+            <span class="tag-option">Product</span>
+            <span class="tag-option">Finance</span>
+            <span class="tag-option">Personal</span>
+          </div>
+
+          <div class="editor-area">
+            <div class="sample-text">Revenue projections for Q4 show a strong upward trend. Key drivers include the enterprise expansion into APAC, the new premium tier upsell campaign, and reduced churn from the recent UX improvements.</div>
+          </div>
+
+          <div class="attach-row">
+            <div class="attach-btn">
+              <span class="ai">◉</span>
+              <span>Photo</span>
+            </div>
+            <div class="attach-btn">
+              <span class="ai">fx</span>
+              <span>Calculator</span>
+            </div>
+          </div>
+
+          <div class="save-btn">Save Note</div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="num">03</span>New Note</div>
+  </div>
+</div>
+
+<!-- PHOTO NOTE SCREEN -->
+<div class="phone-container" id="screen-photo-note">
+  <div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="sensor-island"></div>
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="icons">●●● ▮</span>
+          </div>
+
+          <div class="screen-nav">
+            <span class="back-btn">‹</span>
+            <span class="screen-title">Photo Note</span>
+            <span class="screen-spacer"></span>
+          </div>
+
+          <div class="photo-area">
+            <div class="capture-ring">
+              <div class="inner"></div>
+            </div>
+            <div class="capture-label">Tap to capture</div>
+          </div>
+
+          <div class="field-label">Caption</div>
+          <div class="caption-area">
+            <div class="text">Add a note about this photo...</div>
+          </div>
+
+          <div class="field-label">Quick Tags</div>
+          <div class="quick-tags">
+            <span class="tag-pill">Receipt</span>
+            <span class="tag-pill">Document</span>
+            <span class="tag-pill">Whiteboard</span>
+            <span class="tag-pill">Screenshot</span>
+          </div>
+
+          <div class="save-btn" style="margin-top: auto;">Save Photo Note</div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="num">04</span>Photo Note</div>
+  </div>
+</div>
+
+<!-- CALCULATOR SCREEN -->
+<div class="phone-container" id="screen-calculator">
+  <div>
+    <div class="phone-shell">
+      <div class="phone-body">
+        <div class="sensor-island"></div>
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="icons">●●● ▮</span>
+          </div>
+
+          <div class="screen-nav">
+            <span class="back-btn">‹</span>
+            <span class="screen-title">Calculator</span>
+            <span class="screen-spacer"></span>
+          </div>
+
+          <div class="calc-display">
+            <div class="op-line">1,250 × 4</div>
+            <div class="result">5,000</div>
+          </div>
+
+          <div class="calc-grid">
+            <div class="calc-row">
+              <div class="calc-btn fn">AC</div>
+              <div class="calc-btn fn">±</div>
+              <div class="calc-btn fn">%</div>
+              <div class="calc-btn op">÷</div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-btn">7</div>
+              <div class="calc-btn">8</div>
+              <div class="calc-btn">9</div>
+              <div class="calc-btn op">×</div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-btn">4</div>
+              <div class="calc-btn">5</div>
+              <div class="calc-btn">6</div>
+              <div class="calc-btn op">−</div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-btn">1</div>
+              <div class="calc-btn">2</div>
+              <div class="calc-btn">3</div>
+              <div class="calc-btn op">+</div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-btn wide">0</div>
+              <div class="calc-btn">.</div>
+              <div class="calc-btn op">=</div>
+            </div>
+          </div>
+
+          <div class="save-result-btn">Save Result to Note</div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="num">05</span>Calculator</div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>AURUM NOTE v2.0 — Premium Edition — Blueprint Verification Sheet</p>
+</div>
+
+<script>
+function showScreen(name) {
+  // Hide all
+  document.querySelectorAll('.phone-container').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+  if (name === 'all') {
+    // Show all as a grid
+    document.querySelectorAll('.phone-container').forEach(el => {
+      el.classList.add('active');
+      el.style.display = 'flex';
+    });
+    document.querySelector('.tab-btn:last-child').classList.add('active');
+    document.querySelector('.phone-grid') && (document.querySelector('.phone-grid').style.display = 'flex');
+  } else {
+    document.getElementById('screen-' + name).classList.add('active');
+    // Highlight correct tab
+    const tabs = document.querySelectorAll('.tab-btn');
+    const map = { 'home': 0, 'notes': 1, 'new-note': 2, 'photo-note': 3, 'calculator': 4 };
+    if (map[name] !== undefined) tabs[map[name]].classList.add('active');
+  }
+}
+
+// Initialize — show Home
+showScreen('home');
+</script>
+
+</body>
+</html>

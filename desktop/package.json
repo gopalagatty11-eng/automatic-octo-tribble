@@ -1,0 +1,30 @@
+{
+  "name": "aurum-note-desktop",
+  "version": "2.0.0",
+  "description": "AURUM NOTE — Premium Desktop Edition",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite --port 5173 & electron .",
+    "build": "vite build && electron-builder",
+    "preview": "vite --port 5173",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.0",
+    "vite": "^5.0.0"
+  },
+  "build": {
+    "appId": "com.aurum.note.desktop",
+    "productName": "AURUM NOTE",
+    "directories": { "output": "dist-release" },
+    "files": ["dist/**/*", "main.js", "preload.js"],
+    "win": { "target": "nsis", "icon": "icon.ico" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
+  }
+}
